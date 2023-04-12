@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+
+
+class AuthController extends Controller
+{
+    public function login()
+    {
+        return view('login');
+    }
+
+    public function authenticating(Request $request)
+    {
+        $credentials = $request->validate([
+            'username' => ['required', 'username'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended('/');
+        }
+        Session::flash('status', 'Gagal');
+        Session::flash('message', 'Username atau Password Salah');
+
+        return redirect('/login');
+    }
+}
